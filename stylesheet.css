@@ -1,0 +1,89 @@
+/* Add your custom extension styling here */
+
+
+.ZoneListItem {
+    border-radius: 15px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.ZoneListItemHover {
+    border-radius: 15px;
+    background-color: #494949;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.ZoneListItemBlank {
+    margin-left: 0px;
+    margin-right: 10px;
+    padding-left: 0px;
+    padding-right: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.lower-menu-icon {
+    width: 12px;
+    height: 12px;
+}
+
+.top-icon {
+    margin: 0px;
+    padding: 0px;
+    height: 32px;
+}
+
+.power-off-button {
+    width: 25px;
+    height: 25px;
+}
+
+.temperature {
+    font-size: 18pt;
+    color: white;
+    margin: auto;
+    margin-top: 10px;
+    padding: auto;
+}
+
+.spacer {
+    width: 20px;
+}
+
+.section-header-label {
+    margin-bottom: 4px;
+}
+
+.next_state_label {
+    font-size: 8pt;
+    color: white;
+    margin-right: 0px;
+    margin-left: auto;
+    text-align: right;
+}
+
+.slider-bin {
+    min-height: 16px;
+    padding: 5;
+    border-radius: 99px;
+}
+
+.input-text-box {
+    margin-right: 20px;
+    margin-left: auto;
+}
+
+.input-text-box-failed {
+    margin-right: 20px;
+    margin-left: auto;
+    border: 1px solid red;
+}

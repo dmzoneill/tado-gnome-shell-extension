@@ -1,0 +1,8 @@
+{
+  "name": "Tado",
+  "description": "Manages tado home heating",
+  "uuid": "f520b210-2a5e-49fb-b8d5-84c9b879f8ed",
+  "shell-version": [
+    "43"
+  ]
+}

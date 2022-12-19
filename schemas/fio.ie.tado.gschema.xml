@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="ie.fio.tado" path="/ie/fio/tado/">
+    <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
+    <key name="username" type="s">
+      <default>'test'</default>
+    </key>
+    <key name="password" type="s">
+      <default>'test'</default>
+    </key>
+  </schema>
+</schemalist>
