@@ -17,13 +17,15 @@ const _ = ExtensionUtils.gettext;
 const Tado = Me.imports.Tado;
 
 const GETTEXT_DOMAIN = "ie.fio"
-
 const genIcon = x => Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${x}.svg`).get_path());
+const schema_path = "org.gnome.shell.extensions.tado";
+
+const LOGGING = false
 
 /////////////////////////////////////////////////////////
 // setInterval
 /////////////////////////////////////////////////////////
-
+// https://gist.github.com/andyholmes/582c29facbdbe67048c831a6370173eb
 window.setInterval = function (func, delay, ...args) {
   return GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
     func(...args);
@@ -31,6 +33,7 @@ window.setInterval = function (func, delay, ...args) {
   });
 };
 
+// https://gist.github.com/andyholmes/582c29facbdbe67048c831a6370173eb
 window.clearInterval = GLib.source_remove;
 
 /////////////////////////////////////////////////////////
@@ -135,8 +138,9 @@ class SignInMenuItem extends PopupMenu.PopupBaseMenuItem {
       }
     );
 
-    let username = TadoIndicator.settings.get_string('username');
-    let password = TadoIndicator.settings.get_string('password');
+    let settings = ExtensionUtils.getSettings(schema_path);
+    let username = settings.get_string('tado-username');
+    let password = settings.get_string('tado-password');
 
     this.username_entry = new St.Entry({
       text: username,
@@ -298,12 +302,12 @@ class ZoneListItem extends PopupMenu.PopupBaseMenuItem {
     this.inDrag = false;
     this.slider = new Slider.Slider(0);
     this.slider.value = tempSetting / 25;
-    this.sliderChangedId = this.slider.connect('notify::value', () => { log(this.slider.value); });
+    this.sliderChangedId = this.slider.connect('notify::value', () => { if (LOGGING) if (LOGGING) log(this.slider.value); });
     this.slider.connect('drag-begin', () => (this.inDrag = true));
     this.slider.connect('drag-end', () => {
       this.inDrag = false;
-      log("changed");
-      log(this.slider.value);
+      if (LOGGING) if (LOGGING) log("changed");
+      if (LOGGING) if (LOGGING) log(this.slider.value);
     });
 
     // for focus indication
@@ -496,26 +500,80 @@ class ZoneListItem extends PopupMenu.PopupBaseMenuItem {
 /////////////////////////////////////////////////////////
 const TadoIndicator = GObject.registerClass(
   class TadoIndicator extends PanelMenu.Button {
-    static settings = ExtensionUtils.getSettings('ie.fio.tado');
 
     _init() {
       super._init(0.5, _('Tado Heating Control'));
+
+      let settings = Gio.Settings.new('org.gnome.desktop.interface');
+      settings.connect('changed::color-scheme', this.ColorSchemeChanged.bind(this));
+      this.ColorSchemeChanged();
 
       this.add_child(new St.Icon({
         gicon: genIcon(Icons.TADOSIZED),
         style_class: 'tado-icon',
       }));
 
-
       this.setup();
+    }
+
+    _de_init() {
+      clearInterval(this.updateInterval);
+      this.menu.removeAll();
+      this.runner = null;
+      this.updateInterval = null;
+    }
+
+    ColorSchemeChanged() {
+      try {
+        if (LOGGING) log("Set theme");
+
+        let settings = Gio.Settings.new('org.gnome.desktop.interface');
+
+        if (settings.get_string('color-scheme') == "default") {
+          // detect panel color is white
+        } else {
+          // detect panel color is black
+        }
+
+        Icons = {
+          TADO: 'tado-light',
+          TADOSIZED: 'tado-logo-light',
+          RESUME: 'resume-light',
+          RESUMEBLUE: 'resume-light-blue',
+          POWER: 'power-off-light',
+          POWERTURNOFF: 'power-on-light-red',
+          POWERTURNON: 'power-off-light-green',
+          SETTINGS: 'settings-light',
+          SETTINGSBLUE: 'settings-light-blue',
+          HOME: 'home-active-light',
+          HOMEBLUE: 'home-active-light-blue',
+          COOL: 'face-cool-symbolic',
+          DEL: 'edit-delete-symbolic',
+          SAVE: 'document-save-symbolic-light',
+          SAVEBLUE: 'document-save-symbolic-light-blue',
+          URL: 'mail-forward-symbolic',
+          SET: 'emblem-system-symbolic',
+          EDOWN: 'eye-not-looking-symbolic',
+          ADDON: 'application-x-addon-symbolic',
+          DEBUG: 'applications-engineering-symbolic',
+          EOPEN: 'eye-open-negative-filled-symbolic',
+          EOPENBLUE: 'eye-open-negative-filled-symbolic-blue',
+          BOOST: 'boost-light',
+          BOOSTBLUE: 'boost-light-blue',
+        }
+      }
+      catch (e) {
+        if (LOGGING) log(e)
+      }
     }
 
     async setup() {
       try {
         this.runner = new Tado.Tado();
 
-        let username = TadoIndicator.settings.get_string('username');
-        let password = TadoIndicator.settings.get_string('password');
+        let settings = ExtensionUtils.getSettings(schema_path);
+        let username = settings.get_string('tado-username');
+        let password = settings.get_string('tado-password');
 
         if (username == "test" || password == "test") {
           this.drawSigninMenu();
@@ -534,7 +592,7 @@ const TadoIndicator = GObject.registerClass(
         this.updateInterval = setInterval(() => this.drawMainMenu(), 1000);
       }
       catch (e) {
-        log(e);
+        if (LOGGING) log(e);
       }
     }
 
@@ -592,15 +650,15 @@ const TadoIndicator = GObject.registerClass(
           // bottom menu
           this.menu.addMenuItem(new ButtonListItem([
             boostOption,
-            ['HOME', () => { log("Clicked"); }],  
+            ['HOME', () => { if (LOGGING) log("Clicked"); }],
             new St.Label({ text: "   ", x_expand: false, style_class: 'spacer' }),
             this.countDownLabel,
             new St.Label({ text: "   ", x_expand: false, style_class: 'spacer' }),
             ['SETTINGS', () => {
               clearInterval(this.updateInterval);
               this.drawSigninMenu();
-            }],  
-            ['EOPEN', () => { log("Clicked"); }]
+            }],
+            ['EOPEN', () => { if (LOGGING) log("Clicked"); }]
           ]));
         } else {
           this.countDownTimer -= 1;
@@ -610,7 +668,7 @@ const TadoIndicator = GObject.registerClass(
         }
       }
       catch (e) {
-        log(e);
+        if (LOGGING) log(e);
       }
     }
 
@@ -658,8 +716,9 @@ const TadoIndicator = GObject.registerClass(
             return;
           }
 
-          TadoIndicator.settings.set_string('username', this.signInMenu.getUsername());
-          TadoIndicator.settings.set_string('password', this.signInMenu.getPassword());
+          let settings = ExtensionUtils.getSettings(schema_path);
+          settings.set_string('tado-username', this.signInMenu.getUsername());
+          settings.set_string('tado-password', this.signInMenu.getPassword());
 
           self.countDownTimer = 0;
           self.drawMainMenu();
@@ -679,82 +738,27 @@ const TadoIndicator = GObject.registerClass(
         );
       }
       catch (e) {
-        log(e);
+        if (LOGGING) log(e);
       }
     }
   }
 );
 
-
 class Extension {
   constructor(uuid) {
     this._uuid = uuid;
-    this.init = false;
     ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
-    this.settings = Gio.Settings.new('org.gnome.desktop.interface');
-    this.settings.connect('changed::color-scheme', this.ColorSchemeChanged.bind(this));
-    this.ColorSchemeChanged();
-  }
-
-  ColorSchemeChanged() {
-    try {
-      log("Set theme")
-      if (this.settings.get_string('color-scheme') == "default") {
-        // detect panel color is white
-      } else {
-        // detect panel color is black
-      }
-
-      Icons = {
-        TADO: 'tado-light',
-        TADOSIZED: 'tado-logo-light',
-        RESUME: 'resume-light',
-        RESUMEBLUE: 'resume-light-blue',
-        POWER: 'power-off-light',
-        POWERTURNOFF: 'power-on-light-red',
-        POWERTURNON: 'power-off-light-green',
-        SETTINGS: 'settings-light',
-        SETTINGSBLUE: 'settings-light-blue',
-        HOME: 'home-active-light',
-        HOMEBLUE: 'home-active-light-blue',
-        COOL: 'face-cool-symbolic',
-        DEL: 'edit-delete-symbolic',
-        SAVE: 'document-save-symbolic-light',
-        SAVEBLUE: 'document-save-symbolic-light-blue',
-        URL: 'mail-forward-symbolic',
-        SET: 'emblem-system-symbolic',
-        EDOWN: 'eye-not-looking-symbolic',
-        ADDON: 'application-x-addon-symbolic',
-        DEBUG: 'applications-engineering-symbolic',
-        EOPEN: 'eye-open-negative-filled-symbolic',
-        EOPENBLUE: 'eye-open-negative-filled-symbolic-blue',
-        BOOST: 'boost-light',
-        BOOSTBLUE: 'boost-light-blue',
-      }
-
-      if (this.init == false) {
-        this.init = true;
-        return;
-      }
-
-      this.disable();
-      this.enable();
-    }
-    catch (e) {
-      log(e)
-    }
   }
 
   enable() {
-    log('Enable extension');
     this.ti = new TadoIndicator();
     Main.panel.addToStatusArea(this._uuid, this.ti);
   }
 
   disable() {
+    this.ti._de_init(); // clear setInterval
     this.ti.destroy();
     this.ti = null;
-    log('Disable extension');
   }
 }
 

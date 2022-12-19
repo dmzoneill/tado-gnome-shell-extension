@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="ie.fio.tado" path="/ie/fio/tado/">
+  <schema id="org.gnome.shell.extensions.tado" path="/org/gnome/shell/extensions/tado/">
     <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
-    <key name="username" type="s">
+    <key name="tado-username" type="s">
       <default>'test'</default>
     </key>
-    <key name="password" type="s">
+    <key name="tado-password" type="s">
       <default>'test'</default>
     </key>
   </schema>

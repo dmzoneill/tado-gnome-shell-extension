@@ -5,6 +5,8 @@ const Me = ExtensionUtils.getCurrentExtension();
 const ByteArray = imports.byteArray;
 const { GLib, GObject, Soup, Gio, St } = imports.gi;
 
+const LOGGING = false
+
 class TadoController {
 
   static debugLog = [];
@@ -62,6 +64,7 @@ class TadoController {
 
   async run() {
     try {
+      TadoController.debugLog = []; // empty the log each run
       let self = this;
       let res = false;
 
@@ -95,9 +98,9 @@ class TadoController {
 
       for (let y = 0; y < TadoController.debugLog.length; y++) {
         try {
-          log(JSON.stringify(JSON.parse(TadoController.debugLog[y]), null, 2));
+          if (LOGGING) log(JSON.stringify(JSON.parse(TadoController.debugLog[y]), null, 2));
         } catch (e) {
-          log(TadoController.debugLog[y]);
+          if (LOGGING) log(TadoController.debugLog[y]);
         }
       }
       return true;
@@ -419,7 +422,7 @@ class TadoController {
         boost += 1;
       }
     }
-    
+
     return boost >= zoneIds.length - 1;
   }
 
