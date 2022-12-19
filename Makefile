@@ -13,4 +13,4 @@ clean:
 	}
 
 push:
-	git push -u origin master:master
+	git push -u origin main:main
