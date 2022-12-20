@@ -5,8 +5,6 @@ const Me = ExtensionUtils.getCurrentExtension();
 const ByteArray = imports.byteArray;
 const { GLib, GObject, Soup, Gio, St } = imports.gi;
 
-const LOGGING = false
-
 class TadoController {
 
   static debugLog = [];
@@ -98,14 +96,14 @@ class TadoController {
 
       for (let y = 0; y < TadoController.debugLog.length; y++) {
         try {
-          if (LOGGING) log(JSON.stringify(JSON.parse(TadoController.debugLog[y]), null, 2));
+          // log(JSON.stringify(JSON.parse(TadoController.debugLog[y]), null, 2));
         } catch (e) {
-          if (LOGGING) log(TadoController.debugLog[y]);
+          // log(TadoController.debugLog[y]);
         }
       }
       return true;
     } catch (e) {
-      logError(e);
+      this.log(e);
       return false;
     }
   }
@@ -491,7 +489,7 @@ class TadoController {
       return res;
     }
     catch (e) {
-      logError(e);
+      this.log(e);
       return false;
     }
   }
@@ -540,7 +538,7 @@ class TadoController {
         }
         try {
           if (!data) {
-            throw new Error("No data in response body");
+            this.log("No data in response body");
           }
           if (return_json) {
             resolve(JSON.parse(data));

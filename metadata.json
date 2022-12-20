@@ -1,6 +1,6 @@
 {
-  "name": "Tado",
-  "description": "Manages Tado home heating",
+  "name": "Tado°",
+  "description": "Manages Tado° home heating",
   "uuid": "tado-gnome-shell-extension@fio.ie",
   "shell-version": [
     "43"

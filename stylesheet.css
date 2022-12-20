@@ -1,5 +1,13 @@
 /* Add your custom extension styling here */
 
+.clean {
+    margin: 0px;
+    padding: 0px;
+}
+
+.base {
+    margin-right: 10px;
+}
 
 .ZoneListItem {
     border-radius: 15px;
@@ -86,4 +94,23 @@
     margin-right: 20px;
     margin-left: auto;
     border: 1px solid red;
+}
+
+.disclaimer {
+    text-align: center;
+    font-size: 10pt;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+}
+
+.hyperlink {
+    text-decoration: underline;
+    font-size: 10pt;
+    color: teal;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
