@@ -4,6 +4,7 @@ const { St, GObject, GLib, Gio } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const TadoBaseItem = Me.imports.TadoBaseItem;
+const Util = imports.misc.util;
 
 /////////////////////////////////////////////////////////
 // TadoHeader
@@ -33,12 +34,7 @@ var TadoHyperlinkMenuItem = GObject.registerClass({
     button.connect('clicked', () => {
       try {
         let [success, argv] = GLib.shell_parse_argv("xdg-open \"" + url + "\"");
-        let launcher = new Gio.SubprocessLauncher({
-          flags: (Gio.SubprocessFlags.STDIN_PIPE |
-            Gio.SubprocessFlags.STDOUT_PIPE |
-            Gio.SubprocessFlags.STDERR_PIPE)
-        });
-        let proc1 = launcher.spawnv(argv);
+        Util.spawn(argv);
       } catch (err) {
         // log(err);
       }

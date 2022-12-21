@@ -11,20 +11,6 @@ const TadoAboutMenuStrategy = Me.imports.TadoAboutMenuStrategy;
 const TadoLoginMenuStrategy = Me.imports.TadoLoginMenuStrategy;
 
 /////////////////////////////////////////////////////////
-// setInterval
-/////////////////////////////////////////////////////////
-// https://gist.github.com/andyholmes/582c29facbdbe67048c831a6370173eb
-window._setInterval = function (func, delay, ...args) {
-  return GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
-    func(...args);
-    return GLib.SOURCE_CONTINUE;
-  });
-};
-
-// https://gist.github.com/andyholmes/582c29facbdbe67048c831a6370173eb
-window._clearInterval = GLib.source_remove;
-
-/////////////////////////////////////////////////////////
 // TadoMenuStrategy 
 /////////////////////////////////////////////////////////
 var TadoMenuStrategy = GObject.registerClass({
@@ -104,7 +90,7 @@ var TadoMenuStrategy = GObject.registerClass({
 
   clearInterval() {
     try {
-      _clearInterval(this.updateInterval);
+      clearInterval(this.updateInterval);
     } catch (e) {
       // log(e)
     }
@@ -112,7 +98,7 @@ var TadoMenuStrategy = GObject.registerClass({
 
   setInterval() {
     this.countDownTimer = 0;
-    this.updateInterval = _setInterval(() => {
+    this.updateInterval = setInterval(() => {
       if (this.countDownTimer == 0) {
         this.countDownTimer = 60;
         this.MainMenu.createMenu(this.menu, this.countDownTimer);
