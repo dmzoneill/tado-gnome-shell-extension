@@ -14,7 +14,7 @@ Simple gnome shell app to manage tado home heating.
 - Verify your login on [https://app.tado.com/en/main/home](https://app.tado.com/en/main/home)
 
 - Enable the Extension
-```
+```bash
 gnome-extensions-app
 ```
 
@@ -22,21 +22,16 @@ gnome-extensions-app
 ## Contribute
 
 - Clone to extensions directory
-```
+```bash
 git clone git@github.com:dmzoneill/tado-gnome-shell-extension.git ~/.local/share/gnome-shell/tado-gnome-shell-extension
 ```
 
 - Restart gnome
-```
+```bash
 ALT+F2 + r + Enter
 ```
 
 - Enable the Extension
-```
+```bash
 gnome-extensions-app
 ```
-
-## Screenshot
-
-![Screenshot](https://github.com/dmzoneill/tado-gnome-shell-extension/raw/main/images/Screenshot%20from%202022-12-19%2018-29-35.png)
-
