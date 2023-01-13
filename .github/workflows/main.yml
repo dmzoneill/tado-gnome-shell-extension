@@ -43,7 +43,8 @@ jobs:
               - '*.js'  
       - name: Build
         if: steps.changes.outputs.src == 'true'
-        run: |-          
+        run: |-
+          # shellcheck disable=SC2035
           sed -i 's#^\s\+log#// log#g' *.js 
           # shellcheck disable=SC2035
           zip gnome-extension-${{ github.sha }}.zip icons/ schemas/ metadata.json *.js *.css
