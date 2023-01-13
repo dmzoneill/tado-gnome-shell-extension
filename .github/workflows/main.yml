@@ -45,6 +45,7 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         run: |-
           # shellcheck disable=SC2035
+          sed -i 's#^\s\+log#// log#g' *.js 
           zip gnome-extension-${{ github.sha }}.zip icons/ schemas/ metadata.json *.js *.css
       - name: Archive gnome-extension artifact
         if: steps.changes.outputs.src == 'true'
