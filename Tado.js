@@ -1,5 +1,5 @@
 'use strict'
-// delete this comment
+
 const ByteArray = imports.byteArray // eslint-disable-line no-undef
 const { GLib, Soup } = imports.gi // eslint-disable-line no-undef
 
