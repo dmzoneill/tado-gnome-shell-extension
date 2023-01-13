@@ -7,7 +7,7 @@ const { GLib, GObject, Soup, Gio, St } = imports.gi;
 
 class TadoController {
 
-  static debugLog = [];
+  static helpers = null;
   static username = "";
   static password = "";
   static clientSecret = "";
@@ -41,15 +41,8 @@ class TadoController {
     "credentials": "same-origin"
   }
 
-  constructor() {
-
-  }
-
-  log(msg) {
-    if (TadoController.debugLog.length > 100) {
-      TadoController.debugLog.shift()
-    }
-    TadoController.debugLog.push(msg);
+  constructor(helpers) {
+    TadoController.helpers = helpers;
   }
 
   getLog() {
@@ -62,48 +55,41 @@ class TadoController {
 
   async run() {
     try {
-      TadoController.debugLog = []; // empty the log each run
+      TadoController.helpers.debugLog = []; // empty the log each run
       let self = this;
       let res = false;
 
-      res = await self._getSecret();
+      res = await this._getSecret();
       if (!res) return false;
 
-      res = await self._getToken();
+      res = await this._getToken();
       if (!res) return false;
 
-      res = await self._getHome();
+      res = await this._getHome();
       if (!res) return false;
 
-      res = await self._getZones();
+      res = await this._getZones();
       if (!res) return false;
 
-      res = await self._getHomeState();
+      res = await this._getHomeState();
       if (!res) return false;
 
-      res = await self._getDeviceList();
+      res = await this._getDeviceList();
       if (!res) return false;
 
-      res = await self._getIncidents();
+      res = await this._getIncidents();
       if (!res) return false;
 
-      res = await self._getZoneStates();
+      res = await this._getZoneStates();
       if (!res) return false;
 
       TadoController.zoneList.forEach(element => {
         self._getZoneState(element['id']);
       });
 
-      for (let y = 0; y < TadoController.debugLog.length; y++) {
-        try {
-          // log(JSON.stringify(JSON.parse(TadoController.debugLog[y]), null, 2));
-        } catch (e) {
-          // log(TadoController.debugLog[y]);
-        }
-      }
       return true;
-    } catch (e) {
-      this.log(e);
+    } catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -130,7 +116,8 @@ class TadoController {
       TadoController.clientSecret = arr[1];
       return true;
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -172,7 +159,8 @@ class TadoController {
       TadoController.token = res['access_token'];
       return true;
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -196,7 +184,8 @@ class TadoController {
       let res = await this.req(url, creds, 'POST', false, false)
       TadoController.clientSecret = res['access_token'];
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -213,7 +202,8 @@ class TadoController {
       TadoController.home = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -230,7 +220,8 @@ class TadoController {
       TadoController.homeState = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -247,7 +238,8 @@ class TadoController {
       TadoController.deviceList = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -264,7 +256,8 @@ class TadoController {
       TadoController.incidentList = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -281,7 +274,8 @@ class TadoController {
       TadoController.zoneList = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -298,8 +292,8 @@ class TadoController {
       let humidity = sensorDataPoints['humidity']['percentage'];
       return [insideTemperature, humidity];
     }
-    catch (e) {
-      this.log(e);
+    catch (error) {
+      TadoController.helpers.log(error);
       return [0, 0];
     }
   }
@@ -310,8 +304,8 @@ class TadoController {
       let power = zone['setting']['power'];
       return power == "OFF" ? false : true;
     }
-    catch (e) {
-      this.log(e);
+    catch (error) {
+      TadoController.helpers.log(error);
       return 99;
     }
   }
@@ -323,8 +317,8 @@ class TadoController {
       let nextTemperature = nextScheduleChange['setting']['temperature']['celsius'];
       return nextTemperature;
     }
-    catch (e) {
-      this.log(e);
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -337,8 +331,8 @@ class TadoController {
       let power = nextScheduleChange['setting']['power'];
       return [start, power];
     }
-    catch (e) {
-      this.log(e);
+    catch (error) {
+      TadoController.helpers.log(error);
       return ['', ''];
     }
   }
@@ -351,7 +345,8 @@ class TadoController {
       TadoController.zoneStatesList = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -368,7 +363,8 @@ class TadoController {
       TadoController.zoneStates[id.toString()] = res;
       return true
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -405,7 +401,8 @@ class TadoController {
       let url = 'https://my.tado.com/api/v2/homes/' + TadoController.home['homeId'].toString() + '/overlay?ngsw-bypass=true';
       await this.req(url, json_data, 'POST', true, false);
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -457,13 +454,14 @@ class TadoController {
 
       let url = 'https://my.tado.com/api/v2/homes/' + TadoController.home['homeId'].toString() + '/overlay?ngsw-bypass=true';
       await this.req(url, json_data, 'POST', true, false);
-      await self._getZones();
-      await self._getHomeState();
-      await self._getDeviceList();
-      await self._getIncidents();
-      await self._getZoneStates();
+      await this._getZones();
+      await this._getHomeState();
+      await this._getDeviceList();
+      await this._getIncidents();
+      await this._getZoneStates();
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -478,7 +476,8 @@ class TadoController {
       let url = 'https://my.tado.com/api/v2/homes/' + TadoController.home['homeId'].toString() + '/overlay?rooms=' + zones.join(',') + '&ngsw-bypass=true';
       await this.req(url, {}, 'DELETE', false, false);
     }
-    catch (e) {
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -488,8 +487,8 @@ class TadoController {
       let res = await this.DoReqAsync(url, data, method, json_post, return_json);
       return res;
     }
-    catch (e) {
-      this.log(e);
+    catch (error) {
+      TadoController.helpers.log(error);
       return false;
     }
   }
@@ -508,12 +507,12 @@ class TadoController {
       }
 
       if (method == 'POST') {
-        this.log("Sending");
+        TadoController.helpers.log("Sending");
         let utf8Encode = new TextEncoder();;
         if (json_post) {
           let sjs = JSON.stringify(data);
           message.set_request_body_from_bytes("application/json", utf8Encode.encode(sjs));
-          this.log(sjs);
+          TadoController.helpers.log(sjs);
         } else {
           var formBody = [];
           for (var property in data) {
@@ -523,7 +522,7 @@ class TadoController {
           }
           formBody = formBody.join("&");
           message.set_request_body_from_bytes("application/x-www-form-urlencoded", utf8Encode.encode(formBody));
-          this.log(formBody);
+          TadoController.helpers.log(formBody);
         }
       }
 
@@ -534,11 +533,11 @@ class TadoController {
         let data = httpSession.send_and_read_finish(result).get_data();
         if (data instanceof Uint8Array) {
           data = ByteArray.toString(data);
-          this.log(data);
+          TadoController.helpers.log(data);
         }
         try {
           if (!data) {
-            this.log("No data in response body");
+            TadoController.helpers.log("No data in response body");
           }
           if (return_json) {
             resolve(JSON.parse(data));
@@ -557,7 +556,7 @@ class TadoController {
 
 var Tado = class Tado extends TadoController {
   constructor(params) {
-    super();
+    super(params);
     Object.assign(this, params);
   }
 };

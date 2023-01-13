@@ -8,5 +8,8 @@
     <key name="tado-password" type="s">
       <default>'test'</default>
     </key>
+    <key name="tado-debug" type="b">
+      <default>true</default>
+    </key>
   </schema>
 </schemalist>

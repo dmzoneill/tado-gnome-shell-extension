@@ -25,11 +25,11 @@ const TadoIndicator = GObject.registerClass(
           gicon: this.helpers.GetIcon('TADOSIZED'),
           style_class: 'tado-icon',
         }));
-        
+
         this.MenuStrategy = new TadoMenuStrategy.TadoMenuStrategy(this.helpers, this.menu);
         this.MenuStrategy.Display();
-      } catch (e) {
-        log(e)
+      } catch (error) {
+        this.helpers.log(error);
       }
     }
 

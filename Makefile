@@ -15,9 +15,12 @@ clean:
 	}
 
 push: clean
-	git push -u origin main:main
+	git add -A
+	git commit --amend --no-edit 
+	git push -u origin main:main -f
 
 zip:
 	zip tado-gnome-shell-extension.zip icons/ schemas/ metadata.json *.js *.css
 
-
+debug:
+	clear; sudo journalctl /usr/bin/gnome-shell -f -o cat

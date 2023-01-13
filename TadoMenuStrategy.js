@@ -10,106 +10,110 @@ const TadoMainMenuStrategy = Me.imports.TadoMainMenuStrategy;
 const TadoAboutMenuStrategy = Me.imports.TadoAboutMenuStrategy;
 const TadoLoginMenuStrategy = Me.imports.TadoLoginMenuStrategy;
 
-/////////////////////////////////////////////////////////
-// TadoMenuStrategy 
-/////////////////////////////////////////////////////////
-var TadoMenuStrategy = GObject.registerClass({
-  GTypeName: "TadoMenuStrategy"
-}, class TadoMenuStrategy extends GObject.Object {
+try {
+  /////////////////////////////////////////////////////////
+  // TadoMenuStrategy 
+  /////////////////////////////////////////////////////////
+  var TadoMenuStrategy = GObject.registerClass({
+    GTypeName: "TadoMenuStrategy"
+  }, class TadoMenuStrategy extends GObject.Object {
 
-  constructor(helpers, menu) {
-    super();
-    this.helpers = helpers;
-    this.menu = menu;
-    this.tado = new Tado.Tado();
-    this.updateInterval = null;
-    this.countDownTimer = 0;
-    this.MainMenu = new TadoMainMenuStrategy.TadoMainMenuStrategy(this, this.helpers, this.tado);
-    this.AboutMenu = new TadoAboutMenuStrategy.TadoAboutMenuStrategy(this, this.helpers, this.tado);
-    this.SigninMenu = new TadoLoginMenuStrategy.TadoLoginMenuStrategy(this, this.helpers, this.tado);
-  }
-
-  Destruct() {
-    this.clearInterval();
-  }
-
-  async Display() {
-    try {
-      let settings = ExtensionUtils.getSettings(this.helpers.GetSchemaPath());
-      let username = settings.get_string('tado-username');
-      let password = settings.get_string('tado-password');
-
-      if (username == "test" || password == "test") {
-        this.DisplaySigninMenu();
-        return;
-      }
-
-      let login = await this.tado.checkLogin(username, password);
-
-      if (login == false) {
-        this.DisplaySigninMenu();
-        return;
-      }
-
-      this.DisplayMainMenu();
+    constructor(helpers, menu) {
+      super();
+      this.helpers = helpers;
+      this.menu = menu;
+      this.tado = new Tado.Tado(this.helpers);
+      this.updateInterval = null;
+      this.countDownTimer = 0;
+      this.MainMenu = new TadoMainMenuStrategy.TadoMainMenuStrategy(this, this.helpers, this.tado);
+      this.AboutMenu = new TadoAboutMenuStrategy.TadoAboutMenuStrategy(this, this.helpers, this.tado);
+      this.SigninMenu = new TadoLoginMenuStrategy.TadoLoginMenuStrategy(this, this.helpers, this.tado);
     }
-    catch (e) {
-      // log(e);
-    }
-  }
 
-  async DisplayMainMenu() {
-    try {
-      this.MainMenu.createMenu(this.menu, this.countDownTimer);
-      this.setInterval();
-    }
-    catch (e) {
-      // log(e);
-    }
-  }
-
-  async DisplaySigninMenu() {
-    try {
+    Destruct() {
       this.clearInterval();
-      this.SigninMenu.createMenu(this.menu, this.countDownTimer);
     }
-    catch (e) {
-      // log(e);
-    }
-  }
 
-  async DisplayAbout() {
-    try {
-      this.clearInterval();
-      this.AboutMenu.createMenu(this.menu, this.countDownTimer);
-    }
-    catch (e) {
-      // log(e);
-    }
-  }
+    async Display() {
+      try {
+        let settings = ExtensionUtils.getSettings(this.helpers.GetSchemaPath());
+        let username = settings.get_string('tado-username');
+        let password = settings.get_string('tado-password');
 
-  clearInterval() {
-    try {
-      clearInterval(this.updateInterval);
-    } catch (e) {
-      // log(e)
-    }
-  }
+        if (username == "test" || password == "test") {
+          this.DisplaySigninMenu();
+          return;
+        }
 
-  setInterval() {
-    this.countDownTimer = 0;
-    this.updateInterval = setInterval(() => {
-      if (this.countDownTimer == 0) {
-        this.countDownTimer = 60;
+        let login = await this.tado.checkLogin(username, password);
+
+        if (login == false) {
+          this.DisplaySigninMenu();
+          return;
+        }
+
+        this.DisplayMainMenu();
+      }
+      catch (error) {
+        this.helpers.log(error);
+      }
+    }
+
+    async DisplayMainMenu() {
+      try {
         this.MainMenu.createMenu(this.menu, this.countDownTimer);
-      } else {
-        this.MainMenu.updateMenu(this.menu, this.countDownTimer);
-        this.countDownTimer -= 1;
+        this.setInterval();
       }
-    }, 1000);
-  }
+      catch (error) {
+        this.helpers.log(error);
+      }
+    }
 
-  resetCountDownTimer(next = 60) {
-    this.countDownTimer = next;
-  }
-});
+    async DisplaySigninMenu() {
+      try {
+        this.clearInterval();
+        this.SigninMenu.createMenu(this.menu, this.countDownTimer);
+      }
+      catch (error) {
+        this.helpers.log(error);
+      }
+    }
+
+    async DisplayAbout() {
+      try {
+        this.clearInterval();
+        this.AboutMenu.createMenu(this.menu, this.countDownTimer);
+      }
+      catch (error) {
+        this.helpers.log(error);
+      }
+    }
+
+    clearInterval() {
+      try {
+        clearInterval(this.updateInterval);
+      } catch (error) {
+        this.helpers.log(error);
+      }
+    }
+
+    setInterval() {
+      this.countDownTimer = 0;
+      this.updateInterval = setInterval(() => {
+        if (this.countDownTimer == 0) {
+          this.countDownTimer = 60;
+          this.MainMenu.createMenu(this.menu, this.countDownTimer);
+        } else {
+          this.MainMenu.updateMenu(this.menu, this.countDownTimer);
+          this.countDownTimer -= 1;
+        }
+      }, 1000);
+    }
+
+    resetCountDownTimer(next = 60) {
+      this.countDownTimer = next;
+    }
+  });
+} catch (error) {
+  log(error);
+}
