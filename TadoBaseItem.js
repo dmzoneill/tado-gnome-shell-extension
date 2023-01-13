@@ -1,22 +1,22 @@
-const { St, GObject } = imports.gi;
-const PopupMenu = imports.ui.popupMenu;
+const { St, GObject } = imports.gi // eslint-disable-line
+const PopupMenu = imports.ui.popupMenu // eslint-disable-line
 
 try {
-  /////////////////////////////////////////////////////////
+  /// //////////////////////////////////////////////////////
   // TadoBaseItem
-  /////////////////////////////////////////////////////////
+  /// //////////////////////////////////////////////////////
 
-  var TadoBaseItem = GObject.registerClass({
-    GTypeName: "TadoBaseItem"
+  var TadoBaseItem = GObject.registerClass({ // eslint-disable-line
+    GTypeName: 'TadoBaseItem'
   }, class TadoBaseItem extends PopupMenu.PopupBaseMenuItem {
-    constructor(helpers) {
+    constructor (helpers) {
       super(
         {
           activate: false
         }
-      );
+      )
 
-      this.helpers = helpers;
+      this.helpers = helpers
 
       this._box = new St.BoxLayout(
         {
@@ -25,14 +25,14 @@ try {
           width: 320,
           style_class: 'base'
         }
-      );
+      )
     }
 
-    makeButton(icon_name, callback) {
-      let icon = this.helpers.GetIcon(icon_name);
-      let iconblue = this.helpers.GetIcon(icon_name + 'BLUE');
+    makeButton (iconName, callback) {
+      const icon = this.helpers.GetIcon(iconName)
+      const iconblue = this.helpers.GetIcon(iconName + 'BLUE')
 
-      let button = new St.Button(
+      const button = new St.Button(
         {
           x_expand: true,
           child: new St.Icon(
@@ -42,25 +42,25 @@ try {
             }
           )
         }
-      );
+      )
 
-      if (callback != false) {
-        button.connect('clicked', callback);
+      if (callback !== false) {
+        button.connect('clicked', callback)
 
-        button.connect("enter-event", function () {
-          if (button.child == null) return;
-          button.child.set_gicon(iconblue);
-        });
+        button.connect('enter-event', function () {
+          if (button.child === null) return
+          button.child.set_gicon(iconblue)
+        })
 
-        button.connect("leave-event", function () {
-          if (button.child == null) return;
-          button.child.set_gicon(icon);
-        });
+        button.connect('leave-event', function () {
+          if (button.child == null) return
+          button.child.set_gicon(icon)
+        })
       }
 
-      return button;
+      return button
     }
-  });
+  })
 } catch (error) {
-  log(error);
+  log(error) // eslint-disable-line
 }

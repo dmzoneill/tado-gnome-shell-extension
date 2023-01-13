@@ -1,47 +1,47 @@
-'use strict';
+'use strict'
 
-const { Gio, GLib, St, GObject } = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+const { Gio, GObject } = imports.gi // eslint-disable-line
+const ExtensionUtils = imports.misc.extensionUtils // eslint-disable-line
+const Me = ExtensionUtils.getCurrentExtension()
 
-/////////////////////////////////////////////////////////
+/// //////////////////////////////////////////////////////
 // schema
-/////////////////////////////////////////////////////////
-const schema_path = "org.gnome.shell.extensions.tado";
+/// //////////////////////////////////////////////////////
+const schemaPath = 'org.gnome.shell.extensions.tado'
 
 try {
-  var TadoHelpers = GObject.registerClass({
-    GTypeName: "TadoHelpers"
+  var TadoHelpers = GObject.registerClass({ // eslint-disable-line
+    GTypeName: 'TadoHelpers'
   }, class TadoHelpers extends GObject.Object {
-    static debugLog = [];
-    Icons = {};
+    static debugLog = []
+    Icons = {}
 
-    constructor() {
-      super();
-      let settings = Gio.Settings.new('org.gnome.desktop.interface');
-      settings.connect('changed::color-scheme', this.ColorSchemeChanged.bind(this));
-      this.ColorSchemeChanged();
+    constructor () {
+      super()
+      const settings = Gio.Settings.new('org.gnome.desktop.interface')
+      settings.connect('changed::color-scheme', this.ColorSchemeChanged.bind(this))
+      this.ColorSchemeChanged()
     }
 
-    log(msg) {
+    log (msg) {
       if (TadoHelpers.debugLog.length > 100) {
         TadoHelpers.debugLog.shift()
       }
-      TadoHelpers.debugLog.push(msg);
+      TadoHelpers.debugLog.push(msg)
 
-      let settings = ExtensionUtils.getSettings(this.GetSchemaPath());
-      let enabled = settings.get_boolean('tado-debug');
-      
-      if(enabled) {
-        log(msg);
+      const settings = ExtensionUtils.getSettings(this.GetSchemaPath())
+      const enabled = settings.get_boolean('tado-debug')
+
+      if (enabled) {
+        log(msg) // eslint-disable-line
       }
     }
 
-    ColorSchemeChanged() {
+    ColorSchemeChanged () {
       try {
-        let settings = Gio.Settings.new('org.gnome.desktop.interface');
+        const settings = Gio.Settings.new('org.gnome.desktop.interface')
 
-        if (settings.get_string('color-scheme') == "default") {
+        if (settings.get_string('color-scheme') === 'default') {
           // detect color is white
         } else {
           // detect color is black
@@ -73,27 +73,26 @@ try {
           ECLOSED: 'eye-not-looking-symbolic-light',
           ECLOSEDBLUE: 'eye-not-looking-symbolic-light-blue',
           BOOST: 'boost-light',
-          BOOSTBLUE: 'boost-light-blue',
+          BOOSTBLUE: 'boost-light-blue'
         }
-      }
-      catch (e) {
+      } catch (e) {
         // log(e)
       }
     }
 
-    GetIconName(name) {
-      return this.Icons[name];
+    GetIconName (name) {
+      return this.Icons[name]
     }
 
-    GetIcon(name) {
-      let real_name = this.GetIconName(name);
-      return Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${real_name}.svg`).get_path());;
+    GetIcon (name) {
+      const realName = this.GetIconName(name)
+      return Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${realName}.svg`).get_path())
     }
 
-    GetSchemaPath() {
-      return schema_path;
+    GetSchemaPath () {
+      return schemaPath
     }
-  });
+  })
 } catch (error) {
-  log(error);
+  log(error) // eslint-disable-line
 }

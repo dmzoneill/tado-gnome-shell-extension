@@ -1,71 +1,71 @@
-'use strict';
+'use strict'
 
-const { St, GObject, Clutter } = imports.gi;
-const { Gio } = imports.gi;
-const Slider = imports.ui.slider;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const TadoBaseItem = Me.imports.TadoBaseItem;
+const { St, GObject, Clutter } = imports.gi // eslint-disable-line
+const { Gio } = imports.gi // eslint-disable-line
+const Slider = imports.ui.slider // eslint-disable-line
+const ExtensionUtils = imports.misc.extensionUtils // eslint-disable-line
+const Me = ExtensionUtils.getCurrentExtension()
+const TadoBaseItem = Me.imports.TadoBaseItem
 
 try {
-  /////////////////////////////////////////////////////////
+  /// //////////////////////////////////////////////////////
   // TadoZoneListItem
-  /////////////////////////////////////////////////////////
-  var TadoZoneListItem = GObject.registerClass({
-    GTypeName: "TadoZoneListItem"
+  /// //////////////////////////////////////////////////////
+  var TadoZoneListItem = GObject.registerClass({ // eslint-disable-line
+    GTypeName: 'TadoZoneListItem'
   }, class TadoZoneListItem extends TadoBaseItem.TadoBaseItem {
-    constructor(zone, tado, helpers) {
-      super(helpers);
+    constructor (zone, tado, helpers) {
+      super(helpers)
 
-      let self = this;
+      const self = this
 
-      this.set_style_class_name('ZoneListItem');
-      this.connect("enter-event", function () {
-        self.set_style_class_name('ZoneListItemHover');
-      });
-      this.connect("leave-event", function () {
-        self.set_style_class_name('ZoneListItem');
-      });
+      this.set_style_class_name('ZoneListItem')
+      this.connect('enter-event', function () {
+        self.set_style_class_name('ZoneListItemHover')
+      })
+      this.connect('leave-event', function () {
+        self.set_style_class_name('ZoneListItem')
+      })
 
-      this.zone = zone;
-      this.tado = tado;
-      let temphum = this.tado.getZoneTempHumidity(this.zone['id']);
-      let tempSetting = this.tado.getZoneTempSetting(this.zone['id']);
-      let power = this.tado.getZonePowerSetting(this.zone['id']);
-      let nextState = this.tado.getNextState(this.zone['id']);
-      let nextTime = new Date(nextState[0]);
+      this.zone = zone
+      this.tado = tado
+      const temphum = this.tado.getZoneTempHumidity(this.zone.id)
+      const tempSetting = this.tado.getZoneTempSetting(this.zone.id)
+      const power = this.tado.getZonePowerSetting(this.zone.id)
+      const nextState = this.tado.getNextState(this.zone.id)
+      let nextTime = new Date(nextState[0])
       nextTime = nextTime.toLocaleTimeString('en-US', {
         hour: '2-digit',
-        minute: '2-digit',
-      });
+        minute: '2-digit'
+      })
 
-      this.inDrag = false;
-      this.slider = new Slider.Slider(0);
-      this.slider.value = tempSetting / 25;
+      this.inDrag = false
+      this.slider = new Slider.Slider(0)
+      this.slider.value = tempSetting / 25
       this.sliderChangedId = this.slider.connect('notify::value', () => {
-        // log(this.slider.value); 
-      });
-      this.slider.connect('drag-begin', () => (this.inDrag = true));
+        // log(this.slider.value);
+      })
+      this.slider.connect('drag-begin', () => (this.inDrag = true))
       this.slider.connect('drag-end', () => {
-        this.inDrag = false;
+        this.inDrag = false
         // log("changed");
         // log(this.slider.value);
-      });
+      })
 
       // for focus indication
-      let sliderBin = new St.Bin({
+      const sliderBin = new St.Bin({
         style_class: 'slider-bin',
         child: this.slider,
         reactive: true,
         can_focus: true,
         x_expand: true,
-        y_align: Clutter.ActorAlign.CENTER,
-      });
+        y_align: Clutter.ActorAlign.CENTER
+      })
 
-      sliderBin.set_accessible(this.slider.get_accessible());
-      sliderBin.connect('event', (bin, event) => this.slider.event(event, false));
+      sliderBin.set_accessible(this.slider.get_accessible())
+      sliderBin.connect('event', (bin, event) => this.slider.event(event, false))
 
-      let button = new St.Button(
+      const button = new St.Button(
         {
           x_expand: false,
           x_align: St.Align.START,
@@ -75,82 +75,82 @@ try {
             }
           )
         }
-      );
+      )
 
-      button.child.set_gicon(this.helpers.GetIcon(power ? 'POWERTURNON' : 'POWER'));
-      button.set_margin_right(15);
+      button.child.set_gicon(this.helpers.GetIcon(power ? 'POWERTURNON' : 'POWER'))
+      button.set_margin_right(15)
 
-      button.connect("enter-event", function () {
+      button.connect('enter-event', function () {
         if (power) {
-          button.child.set_gicon(self.helpers.GetIcon('POWERTURNOFF'));
+          button.child.set_gicon(self.helpers.GetIcon('POWERTURNOFF'))
         } else {
-          button.child.set_gicon(self.helpers.GetIcon('POWERTURNON'));
+          button.child.set_gicon(self.helpers.GetIcon('POWERTURNON'))
         }
-      });
+      })
 
-      button.connect("leave-event", function () {
+      button.connect('leave-event', function () {
         if (power) {
-          button.child.set_gicon(self.helpers.GetIcon('POWERTURNON'));
+          button.child.set_gicon(self.helpers.GetIcon('POWERTURNON'))
         } else {
-          button.child.set_gicon(self.helpers.GetIcon('POWER'));
+          button.child.set_gicon(self.helpers.GetIcon('POWER'))
         }
-      });
+      })
 
-      let next_state_label = new St.Label(
+      const nextStateLabel = new St.Label(
         {
-          text: "Scheduled " + nextTime + " (" + nextState[1] + ")",
+          text: 'Scheduled ' + nextTime + ' (' + nextState[1] + ')',
           x_align: St.Align.END,
           x_expand: true,
           width: 190,
           style_class: 'next_state_label'
         }
-      );
+      )
 
-      let zone_label = new St.Label(
+      const zoneLabel = new St.Label(
         {
-          text: this.zone['name'],
+          text: this.zone.name,
           x_expand: true
         }
-      );
+      )
 
-      let spacer1 = new St.Label(
+      const spacer1 = new St.Label(
         {
-          text: "   ",
+          text: '   ',
           x_expand: false,
           style_class: 'spacer'
         }
-      );
+      )
 
-      let spacer2 = new St.Label(
+      const spacer2 = new St.Label(
         {
-          text: "   ",
+          text: '   ',
           x_expand: false,
           style_class: 'spacer'
         }
-      );
+      )
 
-      let tempSingleDecimal = parseFloat(temphum[0]);
-      tempSingleDecimal = tempSingleDecimal.toFixed(1);
+      let tempSingleDecimal = parseFloat(temphum[0])
+      tempSingleDecimal = tempSingleDecimal.toFixed(1)
 
-      let temperature = new St.Label(
+      const temperature = new St.Label(
         {
-          text: tempSingleDecimal.toString() + "°",
+          text: tempSingleDecimal.toString() + '°',
           x_expand: false,
           y_expand: true,
           style_class: 'temperature'
         }
-      );
+      )
 
-      let first_box = new St.BoxLayout(
+      const firstBox = new St.BoxLayout(
         {
           x_align: St.Align.START,
           x_expand: false,
           y_expand: true,
           width: 30
         }
-      );
+      )
 
-      let second_box = new St.BoxLayout(
+      const secondBox = new St.BoxLayout(
         {
           x_align: St.Align.END,
           x_expand: true,
@@ -158,9 +158,9 @@ try {
           vertical: true,
           width: 200
         }
-      );
+      )
 
-      let third_box = new St.BoxLayout(
+      const thirdBox = new St.BoxLayout(
         {
           x_align: St.Align.END,
           y_align: St.Align.MIDDLE,
@@ -168,36 +168,36 @@ try {
           y_expand: true,
           vertical: true
         }
-      );
+      )
 
-      let second_box_inner1 = new St.BoxLayout(
+      const secondBoxInner1 = new St.BoxLayout(
         {
           x_align: St.Align.START,
           x_expand: true,
           height: 20,
           width: 200
         }
-      );
+      )
 
-      let second_box_inner2 = new St.BoxLayout(
+      const secondBoxInner2 = new St.BoxLayout(
         {
           x_align: St.Align.START,
           x_expand: true,
           height: 30,
           width: 200
         }
-      );
+      )
 
-      let second_box_inner3 = new St.BoxLayout(
+      const secondBoxInner3 = new St.BoxLayout(
         {
           x_align: St.Align.END,
           x_expand: true,
           height: 20,
           width: 200
         }
-      );
+      )
 
-      let third_box_inner1 = new St.BoxLayout(
+      const thirdBoxInner1 = new St.BoxLayout(
         {
           x_align: St.Align.START,
           y_align: St.Align.MIDDLE,
@@ -205,29 +205,28 @@ try {
           y_expand: true,
           height: 60
         }
-      );
+      )
 
-      second_box_inner1.add(zone_label);
-      // second_box_inner1.add(PopupMenu.arrowIcon(St.Side.BOTTOM));
-      second_box_inner2.add(sliderBin);
-      second_box_inner3.add(next_state_label);
-      third_box_inner1.add(temperature);
+      secondBoxInner1.add(zoneLabel)
+      secondBoxInner2.add(sliderBin)
+      secondBoxInner3.add(nextStateLabel)
+      thirdBoxInner1.add(temperature)
 
-      first_box.add(button);
-      second_box.add(second_box_inner1);
-      second_box.add(second_box_inner2);
-      second_box.add(second_box_inner3);
-      third_box.add(third_box_inner1);
+      firstBox.add(button)
+      secondBox.add(secondBoxInner1)
+      secondBox.add(secondBoxInner2)
+      secondBox.add(secondBoxInner3)
+      thirdBox.add(thirdBoxInner1)
 
-      this._box.add(first_box);
-      this._box.add(spacer1);
-      this._box.add(second_box);
-      this._box.add(spacer2);
-      this._box.add(third_box);
+      this._box.add(firstBox)
+      this._box.add(spacer1)
+      this._box.add(secondBox)
+      this._box.add(spacer2)
+      this._box.add(thirdBox)
 
       this.actor.add_child(this._box)
     }
-  });
+  })
 } catch (error) {
-  log(error);
+  log(error) // eslint-disable-line
 }
