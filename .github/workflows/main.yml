@@ -73,4 +73,4 @@ jobs:
           pip install gnome-extension-uploader
       - name: Upload step
         run: |-
-          geu publish --username "${{ secrets.CI_USERNAME }}" --password "${{ secrets.CI_PASSWORD }}"
+          bash -c "geu publish --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\""
