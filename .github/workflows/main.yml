@@ -34,13 +34,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - '*.js'  
+              - '*.css'  
+              - '*.json'  
+              - 'icons/**'
+              - 'schemas/**'
       - name: Build
         if: steps.changes.outputs.src == 'true'
         run: |-
@@ -70,7 +73,7 @@ jobs:
 
       - name: Install webstore cli
         run: |-
-          pip install gnome-extension-uploader
+          pip install gnome-extension-publisher
       - name: Upload step
         run: |-
-          bash -c "geu publish --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\""
+          bash -c "geu publisharchive --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\""
