@@ -55,7 +55,7 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         uses: actions/upload-artifact@v2
         with:
-          name: gnome-extension-${{ github.sha }}
+          name: gnome-extension-${{ github.sha }}.zip
           path: gnome-extension-${{ github.sha }}.zip
           
   upload-extension:
@@ -69,11 +69,14 @@ jobs:
       - name: Download bundle artifact
         uses: actions/download-artifact@v3
         with:
-          name: gnome-extension-${{ github.sha }}
+          if_no_artifact_found: warn
+          name: gnome-extension-${{ github.sha }}.zip
 
       - name: Install webstore cli
         run: |-
           pip install gnome-extension-publisher
       - name: Upload step
         run: |-
-          bash -c "geu publisharchive --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\""
+          if test -f "gnome-extension-${{ github.sha }}.zip"; then \
+          bash -c "geu publisharchive --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\" --file gnome-extension-${{ github.sha }}.zip"; \
+          fi
