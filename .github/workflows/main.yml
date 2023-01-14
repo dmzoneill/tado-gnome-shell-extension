@@ -40,7 +40,7 @@ jobs:
         with:
           filters: |
             src:
-              - '*.js'  
+              - '*'  
       - name: Build
         if: steps.changes.outputs.src == 'true'
         run: |-
