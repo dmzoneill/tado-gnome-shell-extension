@@ -1,6 +1,6 @@
 {
   "name": "Tado°",
-  "description": "Manages Tado° home heating.   This extension is not affiliated, funded, or in any way associated with Tado",
+  "description": "Manages Tado° home heating.  This extension is not affiliated, funded, or in any way associated with Tado",
   "uuid": "tado-gnome-shell-extension@fio.ie",
   "shell-version": [
     "43"

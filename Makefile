@@ -22,5 +22,6 @@ push: clean
 zip:
 	zip tado-gnome-shell-extension.zip icons/ schemas/ metadata.json *.js *.css
 
+
 debug:
 	clear; sudo journalctl /usr/bin/gnome-shell -f -o cat
