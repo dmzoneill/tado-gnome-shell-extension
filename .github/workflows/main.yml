@@ -14,7 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
 
       - name: Lint Code Base
@@ -24,45 +23,6 @@ jobs:
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-gnome-extension:
-    if: >-
-      github.event_name == 'push' || 
-      github.event.pull_request.merged == true
-    name: Build extension
-    needs: run-lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        
-      - name: Filter
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - '*.js'  
-              - '*.css'  
-              - '*.json'  
-              - 'icons/**'
-              - 'schemas/**'
-              
-      - name: Build
-        if: steps.changes.outputs.src == 'true'
-        run: |-
-          # shellcheck disable=SC2035
-          sed -i 's#^\s\+log#// log#g' *.js 
-          # shellcheck disable=SC2035
-          zip gnome-extension-${{ github.sha }}.zip icons/** schemas/** metadata.json *.js *.css
-      - name: Install publisher
-        if: steps.changes.outputs.src == 'true'
-        run: |-
-          pip install gnome-extension-publisher
-          
-      - name: Publish
-        if: steps.changes.outputs.src == 'true'
-        run: |-
-          bash -c "gep publisharchive --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\" --file gnome-extension-${{ github.sha }}.zip";
       - name: Rebuild profile
         if: always()
         run: |-
