@@ -1,3 +1,4 @@
+---
 name: CICD
 
 on:
@@ -9,89 +10,8 @@ on:
 permissions: write-all
 
 jobs:
-  run-lint:
-    runs-on: ubuntu-latest
-    name: Run linter
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
-          fetch-depth: 0
-
-      - name: Lint Code Base
-        uses: github/super-linter@v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_GITHUB_ACTIONS: false
-          DEFAULT_BRANCH: "main"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-  bump-version:
-    if: >-
-      github.event_name == 'push' || 
-      github.event.pull_request.merged == true
-    name: Bump Version
-    needs: run-lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        
-      - name: Filter
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - '*.js'
-              - '*.json'
-              - '*.css'
-              - 'images/**'
-              - 'schemas/**'
-              - 'icons/**'
-              
-      - name: Bump
-        if: steps.changes.outputs.src == 'true'
-        run: |-
-          version=$(grep '"version": .*' metadata.json | awk '{print $2}')
-          next=$(echo $version | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)
-          sed "s/$version/$next/" -i metadata.json
-  
-      - name: Push changes
-        if: steps.changes.outputs.src == 'true'
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: 'main' #optional defaults to master
-
-  build-gnome-extension:
-    if: >-
-      github.event_name == 'push' || 
-      github.event.pull_request.merged == true
-    name: Build extension
-    needs: bump-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-                      
-      - name: Build
-        run: |-
-          # shellcheck disable=SC2035
-          sed -i 's#^\s\+log#// log#g' *.js 
-          # shellcheck disable=SC2035
-          zip gnome-extension-${{ github.sha }}.zip icons/** schemas/** metadata.json *.js *.css
-
-      - name: Install publisher
-        run: |-
-          pip install gnome-extension-publisher
-          
-      - name: Publish
-        run: |-
-          bash -c "gep publisharchive --username \"${{ secrets.CI_USERNAME }}\" --password \"${{ secrets.CI_PASSWORD }}\" --file gnome-extension-${{ github.sha }}.zip";
-      
-      - name: Rebuild profile
-        if: always()
-        run: |-
-          curl -H 'Accept: application/vnd.github+json' -H 'Authorization: token ${{ secrets.PROFILE_HOOK }}' --request POST --data '{"event_type": "cicd-hook"}' https://api.github.com/repos/dmzoneill/dmzoneill/dispatches
+  cicd:
+    secrets: inherit
+    uses: dmzoneill/dmzoneill/.github/workflows/dispatch.yaml@main
+    with:
+      gnome-extension: "true"
