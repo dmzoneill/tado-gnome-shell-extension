@@ -6,7 +6,7 @@ Simple gnome shell app to manage tado home heating.
 
 ## Screenshot
 
-![Screenshot](https://github.com/dmzoneill/tado-gnome-shell-extension/raw/main/images/Screenshot%20from%20.0.8-12-19%2018-29-35.png)
+![Screenshot](https://github.com/dmzoneill/tado-gnome-shell-extension/raw/main/images/Screenshot%20from%20.0.9-12-19%2018-29-35.png)
 
 
 ## Install
